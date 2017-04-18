@@ -32,6 +32,21 @@ public:
 	// 重载输出流
 	friend ostream &operator<<(ostream &os, const PsParticle2f &psParticle2f);
 
+	// 获取微粒的顶点数目和绘制微粒所需要的三角形数目
+	void getRenderParameter(int &_vertexNumber, int &_triangleNumber);
+	// 初始化顶点颜色、纹理坐标和索引信息
+	virtual void initData();
+	// 初始化或更新顶点坐标
+	virtual void refreshVertices();
+	// 打印用于绘制渲染的数据信息
+	void printRenderData();
+	// 获取用于绘制的数据数组
+	void getRenderData(float **_vertices, unsigned int **_indices, bool hasTexture);
+	// 将获取的用于绘制的数据数组作为数组的一部分
+	void getRenderDataasPart(float **_vertices, int *_verticesBegin, unsigned int **_indices, int *_indicesBegin, bool hasTexture);
+
+	// 设置尺寸缩放比例
+	void setZoom(float zoom);
 protected:
 	// 粒子的质量
 	float mass;
@@ -53,6 +68,21 @@ protected:
 	float lifetime;
 	// 粒子的年龄
 	float age;
+
+	// 微粒的顶点数目
+	int vertexNumber;
+	// 微粒的顶点坐标
+	float *vertices;
+	// 微粒的顶点颜色
+	float *vertexColors;
+	// 微粒的纹理坐标
+	float *textureCoordinates;
+	// 绘制微粒所需要的三角形数目
+	int triangleNumber;
+	// 绘制微粒的所有三角形的顶点索引
+	unsigned int *indices;
+	// 尺寸缩放
+	float zoom;
 };
 
 #endif
