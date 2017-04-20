@@ -2,22 +2,25 @@
 
 // 默认构造函数
 PsParticle2f::PsParticle2f(){
-	// 初始化用于渲染的数据 这些数据对于某种特定的微粒是不变的
-	vertexNumber = 3;
-	triangleNumber = 1;
-	vertices = (float *)malloc(sizeof(float) * vertexNumber * 2);
-	vertexColors = (float *)malloc(sizeof(float) * vertexNumber * 3);
-	textureCoordinates = (float *)malloc(sizeof(float) * vertexNumber * 2);
-	indices = (unsigned int *)malloc(sizeof(unsigned int) * triangleNumber * 3);
+	applyMemory();
 
 	// 初始化其他具有一定分布的数据
 	init(1.0f, 1.0f, PsColor(0.871f, 0.490f, 0.173f), PsVector2f(0.0f, -1.0f), PsVector2f(0.0f, 0.0f), 
 		0.0f, 0.0f, 10.0f, 0.0f);
 }
 
+// 用户自定义的构造函数
+PsParticle2f::PsParticle2f(float mass, float size, PsColor color, PsVector2f velocity, PsVector2f position,
+	float angularVelocity, float angle, float lifetime, float age, float zoom){
+	applyMemory();
+
+	// 初始化其他具有一定分布的数据
+	init(mass, size, color, velocity, position, angularVelocity, angle, lifetime, age, zoom);
+}
+
 // 用户自定义的初始化函数
 void PsParticle2f::init(float mass, float size, PsColor color, PsVector2f velocity, PsVector2f position,
-	float angularVelocity, float angle, float lifetime, float age){
+	float angularVelocity, float angle, float lifetime, float age, float zoom){
 	this->mass = mass;
 	this->size = size;
 	this->color = color;
@@ -27,9 +30,9 @@ void PsParticle2f::init(float mass, float size, PsColor color, PsVector2f veloci
 	this->angle = angle;
 	this->lifetime = lifetime;
 	this->age = age;
+	this->zoom = zoom;
 
 	acceleration = PsVector2f(0.0f, 0.0f);
-	zoom = 1.0f;
 
 	// 初始化顶点颜色、纹理坐标和索引信息
 	initData();
@@ -56,6 +59,8 @@ inline void PsParticle2f::aging(float timeInterval){
 
 // 粒子是否还活着
 bool PsParticle2f::isAlive(){
+	//if ((position.x > zoom) || (position.x < -zoom) || (position.y > zoom) || (position.y < -zoom))
+	//	return false;
 	return (age <= lifetime);
 }
 
@@ -91,16 +96,16 @@ void PsParticle2f::printInfo(){
 	cout << "PsParticle2f: mass = " << mass << "; size = " << size << "; color = " << color
 		<< "; acceleration = " << acceleration << "; velocity = " << velocity << "; position = "
 		<< position << "; angularVelocity = " << angularVelocity << "; angle = " << angle
-		<< "; lifetime = " << lifetime << "; age = " << age << endl;
+		<< "; lifetime = " << lifetime << "; age = " << age << "; zoom = " << zoom << endl;
 }
 
 // 重载输出流
 ostream &operator<<(ostream &os, const PsParticle2f &psParticle2f){
-	os << "(mass = " << psParticle2f.mass << "; size = " << psParticle2f.size << "; color = " 
-		<< psParticle2f.color << "; acceleration = " << psParticle2f.acceleration << "; velocity = " 
-		<< psParticle2f.velocity << "; position = " << psParticle2f.position << "; angularVelocity = " 
-		<< psParticle2f.angularVelocity << "; angle = " << psParticle2f.angle << "; lifetime = " 
-		<< psParticle2f.lifetime << "; age = " << psParticle2f.age << ")";
+	os << "(mass = " << psParticle2f.mass << "; size = " << psParticle2f.size << "; color = "
+		<< psParticle2f.color << "; acceleration = " << psParticle2f.acceleration << "; velocity = "
+		<< psParticle2f.velocity << "; position = " << psParticle2f.position << "; angularVelocity = "
+		<< psParticle2f.angularVelocity << "; angle = " << psParticle2f.angle << "; lifetime = "
+		<< psParticle2f.lifetime << "; age = " << psParticle2f.age << "; zoom = " << psParticle2f.zoom << ")";
 	return os;
 }
 
@@ -247,6 +252,27 @@ void PsParticle2f::getRenderDataasPart(float **_vertices, int *_verticesBegin, u
 	}
 }
 
-void PsParticle2f::setZoom(float zoom){
-	this->zoom = zoom;
+void PsParticle2f::applyMemory(){
+	// 初始化用于渲染的数据 这些数据对于某种特定的微粒是不变的
+	vertexNumber = 3;
+	triangleNumber = 1;
+	vertices = (float *)malloc(sizeof(float) * vertexNumber * 2);
+	vertexColors = (float *)malloc(sizeof(float) * vertexNumber * 3);
+	textureCoordinates = (float *)malloc(sizeof(float) * vertexNumber * 2);
+	indices = (unsigned int *)malloc(sizeof(unsigned int) * triangleNumber * 3);
+}
+
+// 重新设置粒子尺寸
+void PsParticle2f::resetSize(float size){
+	this->size = size;
+}
+
+// 获取绘制微粒所需要的三角形数目
+int PsParticle2f::getTriangelNumber(){
+	return triangleNumber;
+}
+
+// 获取微粒的顶点数目
+int PsParticle2f::getVertexNumber(){
+	return vertexNumber;
 }
